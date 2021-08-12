@@ -8,8 +8,16 @@
 
 # Example of a Python UDP server
 
+#import sys, os
+#sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+
 import UdpComms as U
 import time
+
+# test.py learning test set
+#from testHandModel import send_action
+#curaction = send_action
+
 
 # Create UDP socket to use for sending (and receiving)
 sock = U.UdpComms(udpIP="127.0.0.1", portTX=8000, portRX=8001, enableRX=True, suppressWarnings=True)
@@ -17,7 +25,10 @@ sock = U.UdpComms(udpIP="127.0.0.1", portTX=8000, portRX=8001, enableRX=True, su
 i = 0
 
 while True:
+    #sock.SendData(curaction)
     sock.SendData('Sent from Python: ' + str(i)) # Send this string to other application
+
+
     i += 1
 
     data = sock.ReadReceivedData() # read data
