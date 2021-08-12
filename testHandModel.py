@@ -35,7 +35,6 @@ action_seq = []
 send_action = ''
 this_action = '?'
 
-
 class server:
     def serverTrans(self):
         # Create UDP socket to use for sending (and receiving)
@@ -43,7 +42,7 @@ class server:
 
         i = 0
 
-        sock.SendData(this_action)
+        sock.SendData(send_action)
         #sock.SendData('Sent from Python: ' + str(i)) # Send this string to other application
 
         i += 1
@@ -53,7 +52,7 @@ class server:
         if data != None: # if NEW data has been received since last ReadReceivedData function call
             print(data) # print new received data
 
-        threading.Timer(3,self.serverTrans).start()
+        threading.Timer(2,self.serverTrans).start()
 
 curS = server()
 curS.serverTrans()
@@ -119,6 +118,7 @@ while True :
                     continue
 
                 
+                #this_action = '?'
                 send_action = this_action
 
                 if action_seq[-1] == action_seq[-2] == action_seq[-3]:
