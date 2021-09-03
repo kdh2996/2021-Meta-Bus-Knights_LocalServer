@@ -3,9 +3,9 @@ import mediapipe as mp
 import numpy as np
 import time, os
 
-actions = ['fireBall', 'thunderStorm', 'ignition']
+actions = ['fireBall', 'thunderStorm', 'ignition', 'magicCasting', 'UICall']
 seq_length = 30
-secs_for_action = 60
+secs_for_action = 45
 
 # MediaPipe hands model
 mp_hands = mp.solutions.hands

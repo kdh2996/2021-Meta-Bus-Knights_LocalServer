@@ -8,7 +8,7 @@ import UdpComms as U
 import time
 import threading
 
-actions = ['fireball', 'thunderStorm', 'ignition']
+actions = ['fireball', 'thunderStorm', 'ignition', 'magicCasting', 'UICall']
 seq_length = 30
 
 model = load_model('models/model2_1.0.h5')
@@ -35,14 +35,48 @@ action_seq = []
 send_action = ''
 this_action = '?'
 
+ismagicCasting = False
+isUsedUICall = False
+
+isSendingValid = False
+
 class server:
+
     def serverTrans(self):
         # Create UDP socket to use for sending (and receiving)
         sock = U.UdpComms(udpIP="127.0.0.1", portTX=8000, portRX=8001, enableRX=True, suppressWarnings=True)
 
+        global ismagicCasting
+        global isUsedUICall
         i = 0
 
-        sock.SendData(send_action)
+        '''
+        if send_action == 'magicCasting':
+            ismagicCasting = True
+
+        if send_action == 'UICall':
+            isUsedUICall = True
+
+        if(isUsedUICall == False and ismagicCasting == True and send_action != 'magicCasting' and send_action != 'UICall'):
+            print("pass magic casting!")
+            print(send_action)
+            sock.SendData(send_action)
+            ismagicCasting = False
+
+        if(isUsedUICall == True and ismagicCasting == False and send_action == 'UICall'):
+            print("pass UI Call!")
+            print(send_action)
+            sock.SendData(send_action)
+            isUsedUICall = False
+        '''
+
+        print(isSendingValid)
+        if(send_action != 'UNKNOWN') :
+            pass
+            #sock.SendData(send_action)
+
+        if(isSendingValid):
+            sock.SendData(send_action)
         #sock.SendData('Sent from Python: ' + str(i)) # Send this string to other application
 
         i += 1
@@ -54,14 +88,53 @@ class server:
 
         threading.Timer(2,self.serverTrans).start()
 
+
+    def serverChangeImmediately(self):
+        # Create UDP socket to use for sending (and receiving)
+        sock = U.UdpComms(udpIP="127.0.0.1", portTX=8000, portRX=8001, enableRX=True, suppressWarnings=True)
+
+        global ismagicCasting
+        global isUsedUICall
+        i = 0
+        
+        if(send_action != 'UNKNOWN') :
+            pass
+            #sock.SendData(send_action)
+
+        sock.SendData(send_action)
+        #sock.SendData('Sent from Python: ' + str(i)) # Send this string to other application
+
+        i += 1
+
+        data = sock.ReadReceivedData() # read data
+
+        if data != None: # if NEW data has been received since last ReadReceivedData function call
+            print(data) # print new received data
+
+
+# server making work
 curS = server()
 curS.serverTrans()
 
+
+class valInitializer:
+
+    def initializeAction(self):
+        global isSendingValid 
+        isSendingValid = False
+        #this_action = 'NOACTION'
+        threading.Timer(2.5, self.initializeAction).start()
+
+
+# variable initializer making work
+valInit = valInitializer()
+valInit.initializeAction()
+
+
 while True :
     #curS.serverTrans()
-
+    
     while cap.isOpened():
-
         #curS.serverTrans()
 
         ret, img = cap.read()
@@ -118,12 +191,20 @@ while True :
                     continue
 
                 
-                #this_action = '?'
+                #this_action = 'UNKNOWN'
                 send_action = this_action
+                
 
                 if action_seq[-1] == action_seq[-2] == action_seq[-3]:
                     this_action = action
+                    isSendingValid = True
+                    
+                #print(send_action)
 
+                #time.sleep(1)
+                #curS.serverChangeImmediately()
+                #threading.Timer(2, curS.serverChangeImmediately).start()
+                
                 cv2.putText(img, f'{this_action.upper()}', org=(int(res.landmark[0].x * img.shape[1]), int(res.landmark[0].y * img.shape[0] + 20)), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(255, 255, 255), thickness=2)
     
         # out.write(img0)
@@ -131,6 +212,7 @@ while True :
         cv2.imshow('img', img)
         if cv2.waitKey(1) == ord('q'):
             break
+
 
 
 
