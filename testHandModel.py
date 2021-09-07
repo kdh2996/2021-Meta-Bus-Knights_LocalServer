@@ -4,7 +4,7 @@ import numpy as np
 from tensorflow.keras.models import load_model
 
 
-import UdpCommunications as U
+import UdpComms as U
 import time
 import threading
 
@@ -35,26 +35,21 @@ action_seq = []
 send_action = ''
 this_action = '?'
 
-<<<<<<< Updated upstream
 ismagicCasting = False
 isUsedUICall = False
 
 isSendingValid = False
-=======
->>>>>>> Stashed changes
 
 class server:
 
     def serverTrans(self):
         # Create UDP socket to use for sending (and receiving)
-        sock = U.UdpCommunications(
-            udpIP="127.0.0.1", portTX=8000, portRX=8001, enableRX=True, suppressWarnings=True)
+        sock = U.UdpComms(udpIP="127.0.0.1", portTX=8000, portRX=8001, enableRX=True, suppressWarnings=True)
 
         global ismagicCasting
         global isUsedUICall
         i = 0
 
-<<<<<<< Updated upstream
         '''
         if send_action == 'magicCasting':
             ismagicCasting = True
@@ -83,20 +78,15 @@ class server:
         if(isSendingValid):
             sock.SendData(send_action)
         #sock.SendData('Sent from Python: ' + str(i)) # Send this string to other application
-=======
-        sock.SendData(send_action)
-        # sock.SendData('Sent from Python: ' + str(i)) # Send this string to other application
->>>>>>> Stashed changes
 
         i += 1
 
-        data = sock.ReadReceivedData()  # read data
+        data = sock.ReadReceivedData() # read data
 
-        if data != None:  # if NEW data has been received since last ReadReceivedData function call
-            print(data)  # print new received data
+        if data != None: # if NEW data has been received since last ReadReceivedData function call
+            print(data) # print new received data
 
-        threading.Timer(2, self.serverTrans).start()
-
+        threading.Timer(2,self.serverTrans).start()
 
 
     def serverChangeImmediately(self):
@@ -126,7 +116,6 @@ class server:
 curS = server()
 curS.serverTrans()
 
-<<<<<<< Updated upstream
 
 class valInitializer:
 
@@ -147,14 +136,6 @@ while True :
     
     while cap.isOpened():
         #curS.serverTrans()
-=======
-while True:
-    # curS.serverTrans()
-
-    while cap.isOpened():
-
-        # curS.serverTrans()
->>>>>>> Stashed changes
 
         ret, img = cap.read()
         img0 = img.copy()
@@ -171,21 +152,18 @@ while True:
                     joint[j] = [lm.x, lm.y, lm.z, lm.visibility]
 
                 # Compute angles between joints
-                v1 = joint[[0, 1, 2, 3, 0, 5, 6, 7, 0, 9, 10, 11, 0,
-                            13, 14, 15, 0, 17, 18, 19], :3]  # Parent joint
-                v2 = joint[[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-                            13, 14, 15, 16, 17, 18, 19, 20], :3]  # Child joint
-                v = v2 - v1  # [20, 3]
+                v1 = joint[[0,1,2,3,0,5,6,7,0,9,10,11,0,13,14,15,0,17,18,19], :3] # Parent joint
+                v2 = joint[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], :3] # Child joint
+                v = v2 - v1 # [20, 3]
                 # Normalize v
                 v = v / np.linalg.norm(v, axis=1)[:, np.newaxis]
 
                 # Get angle using arcos of dot product
                 angle = np.arccos(np.einsum('nt,nt->n',
-                                            v[[0, 1, 2, 4, 5, 6, 8, 9, 10,
-                                                12, 13, 14, 16, 17, 18], :],
-                                            v[[1, 2, 3, 5, 6, 7, 9, 10, 11, 13, 14, 15, 17, 18, 19], :]))  # [15,]
+                    v[[0,1,2,4,5,6,8,9,10,12,13,14,16,17,18],:], 
+                    v[[1,2,3,5,6,7,9,10,11,13,14,15,17,18,19],:])) # [15,]
 
-                angle = np.degrees(angle)  # Convert radian to degree
+                angle = np.degrees(angle) # Convert radian to degree
 
                 d = np.concatenate([joint.flatten(), angle])
 
@@ -196,8 +174,7 @@ while True:
                 if len(seq) < seq_length:
                     continue
 
-                input_data = np.expand_dims(
-                    np.array(seq[-seq_length:], dtype=np.float32), axis=0)
+                input_data = np.expand_dims(np.array(seq[-seq_length:], dtype=np.float32), axis=0)
 
                 y_pred = model.predict(input_data).squeeze()
 
@@ -213,12 +190,8 @@ while True:
                 if len(action_seq) < 3:
                     continue
 
-<<<<<<< Updated upstream
                 
                 #this_action = 'UNKNOWN'
-=======
-                #this_action = '?'
->>>>>>> Stashed changes
                 send_action = this_action
                 
 
@@ -228,27 +201,18 @@ while True:
                     
                 #print(send_action)
 
-<<<<<<< Updated upstream
                 #time.sleep(1)
                 #curS.serverChangeImmediately()
                 #threading.Timer(2, curS.serverChangeImmediately).start()
                 
                 cv2.putText(img, f'{this_action.upper()}', org=(int(res.landmark[0].x * img.shape[1]), int(res.landmark[0].y * img.shape[0] + 20)), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(255, 255, 255), thickness=2)
     
-=======
-                cv2.putText(img, f'{this_action.upper()}', org=(int(res.landmark[0].x * img.shape[1]), int(
-                    res.landmark[0].y * img.shape[0] + 20)), fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(255, 255, 255), thickness=2)
-
->>>>>>> Stashed changes
         # out.write(img0)
         # out2.write(img)
         cv2.imshow('img', img)
         if cv2.waitKey(1) == ord('q'):
             break
-<<<<<<< Updated upstream
 
 
 
 
-=======
->>>>>>> Stashed changes
