@@ -43,7 +43,7 @@ class server:
 
     def serverTrans(self):
         # Create UDP socket to use for sending (and receiving)
-        sock = U.UdpComms(udpIP="127.0.0.1", portTX=8000, portRX=8001, enableRX=True, suppressWarnings=True)
+        sock = U.UdpComms(udpIP="127.0.0.1", udpSendIP="127.0.0.1", portTX=8000, portRX=8001, enableRX=True, suppressWarnings=True)
 
         global ismagicCasting
         global isUsedUICall
@@ -87,7 +87,7 @@ class server:
 
         threading.Timer(2,self.serverTrans).start()
 
-
+    """
     def serverChangeImmediately(self):
         # Create UDP socket to use for sending (and receiving)
         sock = U.UdpComms(udpIP="127.0.0.1", portTX=8000, portRX=8001, enableRX=True, suppressWarnings=True)
@@ -109,7 +109,7 @@ class server:
 
         if data != None: # if NEW data has been received since last ReadReceivedData function call
             print(data) # print new received data
-
+    """
 
 # server making work
 curS = server()
